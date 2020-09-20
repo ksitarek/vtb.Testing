@@ -12,11 +12,23 @@ namespace vtb.Testing.Rest
     public class RestClient : RESTFulApiFactoryClient, IRestClient
     {
         private readonly HttpClient _httpClient;
-        public HttpRequestHeaders DefaultRequestHeaders { get => _httpClient.DefaultRequestHeaders; }
 
         public RestClient(HttpClient httpClient) : base(httpClient)
         {
             _httpClient = httpClient;
+        }
+
+        public HttpRequestHeaders DefaultRequestHeaders { get => _httpClient.DefaultRequestHeaders; }
+
+        public async ValueTask PatchAsync<TPatchDoc>(string relativeUrl, JsonPatchDocument<TPatchDoc> content)
+            where TPatchDoc : class
+        {
+            var contentString = StringifyJsonifyContent(content);
+
+            var responseMessage =
+                await _httpClient.PatchAsync(relativeUrl, contentString);
+
+            await ValidationService.ValidateHttpResponseAsync(responseMessage);
         }
 
         public async ValueTask<TResponse> PostAsync<TRequest, TResponse>(string relativeUrl, TRequest content)
@@ -37,17 +49,6 @@ namespace vtb.Testing.Rest
 
             var responseMessage =
                 await _httpClient.PostAsync(relativeUrl, contentString);
-
-            await ValidationService.ValidateHttpResponseAsync(responseMessage);
-        }
-
-        public async ValueTask PatchAsync<TPatchDoc>(string relativeUrl, JsonPatchDocument<TPatchDoc> content)
-            where TPatchDoc : class
-        {
-            var contentString = StringifyJsonifyContent(content);
-
-            var responseMessage =
-                await _httpClient.PatchAsync(relativeUrl, contentString);
 
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
         }
