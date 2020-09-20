@@ -40,20 +40,20 @@ pipeline {
                 sh 'dotnet build -p:Version=${VERSION} -c Release --no-restore'
             }
         }
-        stage('Run All Tests') {
-            steps {
-                sh '''\
-                    dotnet test \
-                        -c Release \
-                        --no-build \
-                        --logger "trx" \
-                        /p:CollectCoverage=true \
-                        /p:CoverletOutputFormat="opencover" \
-                        /p:CoverletOutput=./
-                '''
-                mstest()
-            }
-        }
+        // stage('Run All Tests') {
+        //     steps {
+        //         sh '''\
+        //             dotnet test \
+        //                 -c Release \
+        //                 --no-build \
+        //                 --logger "trx" \
+        //                 /p:CollectCoverage=true \
+        //                 /p:CoverletOutputFormat="opencover" \
+        //                 /p:CoverletOutput=./
+        //         '''
+        //         mstest()
+        //     }
+        // }
         stage('SCA Upload') {
             steps {
                 sh 'dotnet sonarscanner end /d:sonar.login="${SONARQUBE_TOKEN}"'
