@@ -61,6 +61,24 @@ namespace vtb.Testing.Rest
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
         }
 
+        public async ValueTask PutAsync<TRequest>(string relativeUrl, TRequest content)
+        {
+            var contentString = StringifyJsonifyContent(content);
+
+            var responseMessage =
+                await _httpClient.PutAsync(relativeUrl, contentString);
+
+            await ValidationService.ValidateHttpResponseAsync(responseMessage);
+        }
+
+        public async ValueTask PutAsync<TRequest>(string relativeUrl)
+        {
+            var responseMessage =
+                await _httpClient.PutAsync(relativeUrl, null);
+
+            await ValidationService.ValidateHttpResponseAsync(responseMessage);
+        }
+
         private static async ValueTask<T> DeserializeResponseContent<T>(HttpResponseMessage responseMessage)
         {
             var responseString = await responseMessage.Content.ReadAsStringAsync();
