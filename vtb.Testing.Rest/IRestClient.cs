@@ -17,6 +17,6 @@ namespace vtb.Testing.Rest
 
         ValueTask PutAsync<TRequest>(string relativeUrl, TRequest content);
 
-        ValueTask PutAsync<TRequest>(string relativeUrl);
+        ValueTask PutAsync(string relativeUrl);
     }
 }

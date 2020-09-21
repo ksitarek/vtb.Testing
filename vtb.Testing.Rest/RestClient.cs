@@ -71,7 +71,7 @@ namespace vtb.Testing.Rest
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
         }
 
-        public async ValueTask PutAsync<TRequest>(string relativeUrl)
+        public async ValueTask PutAsync(string relativeUrl)
         {
             var responseMessage =
                 await _httpClient.PutAsync(relativeUrl, null);
