@@ -2,6 +2,7 @@
 using Newtonsoft.Json;
 using RESTFulSense.Clients;
 using RESTFulSense.Services;
+using System;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
@@ -20,7 +21,7 @@ namespace vtb.Testing.Rest
 
         public HttpRequestHeaders DefaultRequestHeaders { get => _httpClient.DefaultRequestHeaders; }
 
-        public async ValueTask PatchAsync<TPatchDoc>(string relativeUrl, JsonPatchDocument<TPatchDoc> content)
+        public async ValueTask<Uri> PatchAsync<TPatchDoc>(string relativeUrl, JsonPatchDocument<TPatchDoc> content)
             where TPatchDoc : class
         {
             var contentString = StringifyJsonifyContent(content);
@@ -29,6 +30,8 @@ namespace vtb.Testing.Rest
                 await _httpClient.PatchAsync(relativeUrl, contentString);
 
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
+
+            return responseMessage.Headers.Location;
         }
 
         public async ValueTask<TResponse> PostAsync<TRequest, TResponse>(string relativeUrl, TRequest content)
@@ -43,7 +46,7 @@ namespace vtb.Testing.Rest
             return await DeserializeResponseContent<TResponse>(responseMessage);
         }
 
-        public async ValueTask PostAsync<TRequest>(string relativeUrl, TRequest content)
+        public async ValueTask<Uri> PostAsync<TRequest>(string relativeUrl, TRequest content)
         {
             var contentString = StringifyJsonifyContent(content);
 
@@ -51,17 +54,21 @@ namespace vtb.Testing.Rest
                 await _httpClient.PostAsync(relativeUrl, contentString);
 
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
+
+            return responseMessage.Headers.Location;
         }
 
-        public async ValueTask PostAsync(string relativeUrl)
+        public async ValueTask<Uri> PostAsync(string relativeUrl)
         {
             var responseMessage =
                 await _httpClient.PostAsync(relativeUrl, null);
 
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
+
+            return responseMessage.Headers.Location;
         }
 
-        public async ValueTask PutAsync<TRequest>(string relativeUrl, TRequest content)
+        public async ValueTask<Uri> PutAsync<TRequest>(string relativeUrl, TRequest content)
         {
             var contentString = StringifyJsonifyContent(content);
 
@@ -69,14 +76,17 @@ namespace vtb.Testing.Rest
                 await _httpClient.PutAsync(relativeUrl, contentString);
 
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
+
+            return responseMessage.Headers.Location;
         }
 
-        public async ValueTask PutAsync(string relativeUrl)
+        public async ValueTask<Uri> PutAsync(string relativeUrl)
         {
             var responseMessage =
                 await _httpClient.PutAsync(relativeUrl, null);
 
             await ValidationService.ValidateHttpResponseAsync(responseMessage);
+            return responseMessage.Headers.Location;
         }
 
         private static async ValueTask<T> DeserializeResponseContent<T>(HttpResponseMessage responseMessage)
